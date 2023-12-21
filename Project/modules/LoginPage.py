@@ -151,7 +151,7 @@ class LoginPage(tk.Frame):
 
         # reset input fields
         self.emailL_entry.delete(0, tk.END)
-        self.pass_entry.delete(0, tk.END)
+        self.passL_entry.delete(0, tk.END)
     
     def setup_submit_on_enter(self):
         # bind the "Enter" key event to the submit_data() method on the frame
