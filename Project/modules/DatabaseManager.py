@@ -41,8 +41,13 @@ class DatabaseManager:
         try:
             self.cursor.execute(query, params)
             print("Query executed: " + query)
+            
+            if query.startswith("SELECT"):
+                return self.cursor.fetchall()
+            
             self.conn.commit()
-            return self.cursor.fetchall()
+            return 
+        
         except sql.Error as e:
             print(f"Error executing query: {e}")
             return None

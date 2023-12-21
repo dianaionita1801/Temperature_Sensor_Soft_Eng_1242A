@@ -19,7 +19,7 @@ class OptimalTemperatureSensorApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         
-        self.db_manager = DatabaseManager("192.168.15.70", "root", "root", "Temperature_Sensor")
+        self.db_manager = DatabaseManager("192.168.0.221", "root", "root", "Temperature_Sensor")
         self.db_manager.connect()
         
         self.title('Optimal Temperature Sensor')
