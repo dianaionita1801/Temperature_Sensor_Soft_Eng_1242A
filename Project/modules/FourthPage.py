@@ -52,7 +52,7 @@ class FourthPage(tk.Frame):
         # configure tag colors for even and odd rows
         self.tree.tag_configure("tree_color", background = '#bca6e1')
     
-         # add some sample data to the Treeview (replace this with data from your database)
+        # add some sample data to the Treeview (replace this with data from your database)
         # self.tree.insert("", "end", values=(1, "DHT22_1", 1, "2023-06-26", 1, "2023-06-26", 1, "Yes"),tags=("tree_color",))
         # self.tree.insert("", "end", values=(2, "DHT22_1", 2, "2023-06-26", 2, "2023-07-18", 2, "No"), tags=("tree_color",))
         
@@ -72,11 +72,6 @@ class FourthPage(tk.Frame):
 
         # pack the Treeview within tree_frame 
         self.tree.pack(expand=True, fill="both")
-        
-        # define the headings and associate them with the Treeview columns
-        headings = ("Sensor ID", "Sensor Name", "Room ID", "Add date", "User Add ID", "Edit date", "User Edit ID", "Active")
-        for i, heading in enumerate(headings):
-            self.tree.heading(i, text=heading)
     
         # create entries and labels to facilitate the management of the treeview data
         
@@ -355,7 +350,7 @@ class FourthPage(tk.Frame):
         # get the text value of the ToggleButton ("Yes" or "No")
         active_state = self.active_entry.cget("text")
         
-        if not sensor_id or not sensor_name or not room_id:
+        if not sensor_name or not room_id:
             ms.showerror("Error", "Please fill in all the required fields.")
             return
         
@@ -367,17 +362,25 @@ class FourthPage(tk.Frame):
         # get the current date and time
         add_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        # pass the values of the parameters to the params list
-        params = (sensor_id, sensor_name, room_id, add_date, user_add, edit_date, user_edit, active)
+        select_param = (sensor_name, room_id)
+        result = self.db_manager.execute_query("SELECT * FROM `Sensor` WHERE `Sensor_Name` = %s AND `Room_ID` = %s", select_param)
         
-        self.db_manager.execute_query("INSERT INTO `Sensor` (`Sensor_ID`, `Sensor_Name`, `Room_ID`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s)", params)
-    
-        # insert the data into the table
-        self.tree.insert("", "end", values=(sensor_id, sensor_name, room_id, add_date, user_add, edit_date, user_edit, active), tags = ("tree_color",))
-    
-        # clear the entry fields
-        self.clear_entries()
+        if(result):
+            ms.showerror("Error", "The data already exists in the database.")
+            return
         
+        else:
+            # pass the values of the parameters to the params list
+            params = (sensor_id, sensor_name, room_id, add_date, user_add, edit_date, user_edit, active)
+            
+            self.db_manager.execute_query("INSERT INTO `Sensor` (`Sensor_ID`, `Sensor_Name`, `Room_ID`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s)", params)
+        
+            # insert the data into the table
+            self.tree.insert("", "end", values=(sensor_id, sensor_name, room_id, add_date, user_add, edit_date, user_edit, active), tags = ("tree_color",))
+        
+            # clear the entry fields
+            self.clear_entries()
+            
 
     # function that clears the entry fields - accessed throught the clear entries button
     def clear_entries(self):
@@ -459,12 +462,12 @@ class FourthPage(tk.Frame):
             self.active_pop.config(text="Yes", relief=tk.SUNKEN)
             
     def disable_btn_sen(self):
-        btns_to_dis = [self.AddSensor, self.EditSensor, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.BackFor]
+        btns_to_dis = [self.AddSensor, self.EditSensor, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.BackFor, self.sen_id_entry, self.sen_name_entry, self.room_id_entry, self.add_date_entry, self.user_add_id_entry, self.edit_date_entry, self.user_edit_id_entry, self.active_entry]
         for button in btns_to_dis:
             button.config(state=tk.DISABLED)
     
     def enable_btn_sen(self):
-        btns_to_en = [self.AddSensor, self.EditSensor, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.BackFor]
+        btns_to_en = [self.AddSensor, self.EditSensor, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.BackFor, self.sen_id_entry, self.sen_name_entry, self.room_id_entry, self.add_date_entry, self.user_add_id_entry, self.edit_date_entry, self.user_edit_id_entry, self.active_entry]
         for button in btns_to_en:
             button.config(state=tk.NORMAL)
         

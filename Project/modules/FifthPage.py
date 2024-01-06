@@ -72,11 +72,6 @@ class FifthPage(tk.Frame):
     
         # pack the Treeview within tree_frame 
         self.tree.pack(expand=True, fill="both")
-        
-        # define the headings and associate them with the Treeview columns
-        headings = ("Room ID", "Room Name", "Add date", "User Add ID", "Edit date", "User Edit ID", "Active")
-        for i, heading in enumerate(headings):
-            self.tree.heading(i, text=heading)
     
         # create entries and labels to facilitate the management of the treeview data
         
@@ -346,16 +341,24 @@ class FifthPage(tk.Frame):
         # get the current date and time
         add_dater = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        # pass the values of the parameters to the params list
-        paramtr = (room_id, room_name, add_dater, user_addr, edit_dater, user_editr, active)
+        select_param = room_name
+        result = self.db_manager.execute_query("SELECT * FROM `Room` WHERE `Room_Name` = %s", select_param)
         
-        self.db_manager.execute_query("INSERT INTO `Room` (`Room_ID`, `Room_Name`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s)", paramtr)
+        if(result):
+            ms.showerror("Error", "The data already exists in the database.")
+            return
         
-        # insert the data into the table
-        self.tree.insert("", "end", values=(room_id, room_name, add_dater, user_addr, edit_dater, user_editr, active), tags = ("tree_color",))
-    
-        # clear the entry fields
-        self.clear_entries()
+        else:
+            # pass the values of the parameters to the params list
+            paramtr = (room_id, room_name, add_dater, user_addr, edit_dater, user_editr, active)
+            
+            self.db_manager.execute_query("INSERT INTO `Room` (`Room_ID`, `Room_Name`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s)", paramtr)
+            
+            # insert the data into the table
+            self.tree.insert("", "end", values=(room_id, room_name, add_dater, user_addr, edit_dater, user_editr, active), tags = ("tree_color",))
+        
+            # clear the entry fields
+            self.clear_entries()
     
     # function that clears the entry fields - accessed throught the clear entries button
     def clear_entries(self):
@@ -426,12 +429,12 @@ class FifthPage(tk.Frame):
             self.active_room.config(text="Yes", relief=tk.SUNKEN)
     
     def dis_btn_room(self):
-        btns_to_dis = [self.AddRoom, self.EditRoom, self.DeleteSelectedR, self.DeleteAllR, self.ClearEntryR, self.BackFif]
+        btns_to_dis = [self.AddRoom, self.EditRoom, self.DeleteSelectedR, self.DeleteAllR, self.ClearEntryR, self.BackFif, self.room_id_entry, self.room_name_entry, self.add_dater_entry, self.user_add_idr_entry, self.edit_dater_entry, self.user_edit_idr_entry, self.activer_entry]
         for btn in btns_to_dis:
             btn.config(state=tk.DISABLED)
 
     def enab_btn_room(self):
-        btns_to_enab = [self.AddRoom, self.EditRoom, self.DeleteSelectedR, self.DeleteAllR, self.ClearEntryR, self.BackFif]
+        btns_to_enab = [self.AddRoom, self.EditRoom, self.DeleteSelectedR, self.DeleteAllR, self.ClearEntryR, self.BackFif, self.room_id_entry, self.room_name_entry, self.add_dater_entry, self.user_add_idr_entry, self.edit_dater_entry, self.user_edit_idr_entry, self.activer_entry]
         for btn in btns_to_enab:
             btn.config(state=tk.NORMAL)            
             

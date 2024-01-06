@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 from tkinter import Scrollbar
 from modules.AdminPasswordWindow import AdminPasswordWindow
+import time
 
 
 class SixthPage(tk.Frame):
@@ -26,7 +27,6 @@ class SixthPage(tk.Frame):
        # create a Frame to hold the Treeview and scrollbars
         tree_frame = tk.Frame(self)
         tree_frame.place(relx = 0.5, rely = 0.3, anchor = "center", relwidth = 0.9, relheight = 0.5)
-        
     
         # configure the Treeview Colors
         self.style = ttk.Style()
@@ -52,6 +52,8 @@ class SixthPage(tk.Frame):
         # add some sample data to the Treeview (replace this with data from your database)
         # self.tree.insert("", "end", values = (1, 1, 1, 2, 2, "2023-07-27 - 15:17:25"),tags = ("tree_color",))
         # self.tree.insert("", "end", values = (2, 2, 2, 1, 1, "2023-07-27 - 15:00:25"), tags = ("tree_color",))
+        
+        self.fill_monitoring()
        
         tableM = "Monitoring" 
        
@@ -61,6 +63,7 @@ class SixthPage(tk.Frame):
         # populate the Treeview with the fetched data
         for mon_data in monit_data:
            self.tree.insert("", tk.END, values=mon_data, tags=("tree_color",))
+           
     
         # create vertical scrollbar and link it to the treeview
         v_scroll = Scrollbar(tree_frame, orient = "vertical", command = self.tree.yview)
@@ -157,7 +160,6 @@ class SixthPage(tk.Frame):
         # bind the resize callback to the parent window
         self.bind("<Configure>", self.on_window_resize)
     
-    
     # function that loads an image from a file path and resizes it to the specified dimensions    
     def load_and_resize_image(self, width, height):
         image = Image.open(self.image_path)
@@ -184,3 +186,28 @@ class SixthPage(tk.Frame):
         admin_pass_window = AdminPasswordWindow(controller, next_page)
         admin_pass_window.grab_set()  
 
+    # function to fill the monitoring table
+    def fill_monitoring(self):
+        tableT = "Temperature"
+        tableH = "Humidity"
+        
+        temp_rec = self.db_manager.fetch_table(tableT)
+        hum_rec = self.db_manager.fetch_table(tableH)
+        
+        for temperature in temp_rec:
+            temperature_id, _, sensor_id_t, room_id_t, date_of_reading_t = temperature
+            
+            for humidity in hum_rec: 
+                humidity_id, _, sensor_id_h, room_id_h, date_of_reading_h = humidity
+            
+                monitoring_id = None
+            
+                if sensor_id_t == sensor_id_h and room_id_t == room_id_h and date_of_reading_t == date_of_reading_h:
+                    
+                    result = self.db_manager.execute_query("SELECT * FROM `Monitoring` WHERE `Temperature_ID` = %s AND `Humidity_ID` = %s", (temperature_id, humidity_id))
+                
+                    # If the result is empty, insert the data into the Monitoring table
+                    if not result:
+                        param = (monitoring_id, sensor_id_t, room_id_t, temperature_id, humidity_id, date_of_reading_h)
+                        self.db_manager.execute_query("INSERT INTO `Monitoring` (`Monitoring_ID`, `Sensor_ID`, `Room_ID`, `Temperature_ID`, `Humidity_ID`, `Date_of_reading`) values (%s, %s, %s, %s, %s, %s)", param)
+        
