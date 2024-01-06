@@ -5,6 +5,9 @@ from tkinter import Scrollbar
 import matplotlib.pyplot as plt
 import datetime
 import random
+from modules.TempPage import TempPage
+from modules.SixthPage import SixthPage
+from modules.StartPage import StartPage
 
 class HumPage(tk.Frame):
     def __init__(self, parent, controller, db_manager):

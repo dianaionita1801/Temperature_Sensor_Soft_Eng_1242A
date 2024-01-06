@@ -39,7 +39,7 @@ class ThirdPage(tk.Frame):
         self.style.map("Treeview", background=[("selected", "#8056c7")], foreground=[("selected", "white")])
 
         # create the Treeview widget to display the data in a table
-        self.tree = ttk.Treeview(tree_frame, columns=("User_ID", "First_Name", "Last_Name", "Email", "Phone_number", "Password", "Date_of_reg", "Priv_ID", "Active"), show="headings")
+        self.tree = ttk.Treeview(tree_frame, columns=("User_ID", "First_Name", "Last_Name", "Email", "Phone_number", "Password", "Date_of_reg", "Priv_Batch", "Active"), show="headings")
         
         # define the headings of the treeview
         self.tree.heading("User_ID", text="User ID")
@@ -49,7 +49,7 @@ class ThirdPage(tk.Frame):
         self.tree.heading("Phone_number", text="Phone number")
         self.tree.heading("Password", text="Password")
         self.tree.heading("Date_of_reg", text="Date of Registration")
-        self.tree.heading("Priv_ID", text="Privilege ID")
+        self.tree.heading("Priv_Batch", text="Privilege Batch")
         self.tree.heading("Active", text="Active")
         self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         
@@ -77,10 +77,6 @@ class ThirdPage(tk.Frame):
         # pack the Treeview within tree_frame 
         self.tree.pack(expand=True, fill="both")
         
-        # define the headings and associate them with the Treeview columns
-        headings = ("User ID", "First Name", "Last Name", "Email", "Phone number", "Password", "Date of Registration", "Privilege ID", "Active")
-        for i, heading in enumerate(headings):
-            self.tree.heading(i, text=heading)
         
         # create entries and labels to facilitate the management of the treeview data
         
@@ -219,23 +215,23 @@ class ThirdPage(tk.Frame):
         self.date_of_reg_entry.place(relx = 0.657, rely = 0.65, anchor = "center")
         
         # privilege id label and entry
-        label_priv_id = tk.Label(
+        label_priv_batch = tk.Label(
             self,
             text = "UP_Batch*:",
             font = ('Footlight MT Light', 11),
             bg = '#c8a4d4',
             fg = '#12043e'
             )
-        label_priv_id.place(relx = 0.73, rely = 0.65, anchor = "w") 
+        label_priv_batch.place(relx = 0.73, rely = 0.65, anchor = "w") 
         
-        self.priv_id_entry = tk.Entry(
+        self.priv_batch_entry = tk.Entry(
             self,
             font = ('Footlight MT Light', 11),
             fg = '#12043e',
             bg = '#dbb6ee',
             width = 12                         
             )
-        self.priv_id_entry.place(relx = 0.877, rely = 0.65, anchor = "center")
+        self.priv_batch_entry.place(relx = 0.877, rely = 0.65, anchor = "center")
        
         # active label and entry
         label_active = tk.Label(
@@ -406,13 +402,13 @@ class ThirdPage(tk.Frame):
         phone = self.phone_entry.get()
         password = self.password_entry.get()
         # date_of_reg = self.date_of_reg_entry.get()
-        priv_id = self.priv_id_entry.get()
+        priv_batch = self.priv_batch_entry.get()
         
         salt = "57c21b"
         pepper = "2p2o1v" 
         
         # Check if any of the required fields are empty
-        if not user_id or not first_name or not last_name or not email or not phone or not password or not priv_id:
+        if not first_name or not last_name or not email or not phone or not password or not priv_batch:
             ms.showerror("Error", "Please fill in all the required fields*.")
             return
     
@@ -432,12 +428,12 @@ class ThirdPage(tk.Frame):
         date_of_reg = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         # pass the values of the parameters to the params list
-        params = (user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_id, active)
+        params = (user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active)
         
-        self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", params)
+        self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_Batch`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", params)
     
         # insert the data into the table
-        self.tree.insert("", tk.END, values=(user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_id, active), tags = ("tree_color",))
+        self.tree.insert("", tk.END, values=(user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active), tags = ("tree_color",))
     
         # clear the entry fields
         self.clear_entries()
@@ -458,7 +454,7 @@ class ThirdPage(tk.Frame):
         self.phone_entry.delete(0, tk.END)
         self.password_entry.delete(0, tk.END)
         self.date_of_reg_entry.delete(0, tk.END)
-        self.priv_id_entry.delete(0, tk.END)
+        self.priv_batch_entry.delete(0, tk.END)
         self.active_entry.config(text="No", bg="#dbb6ee", relief=tk.RAISED)
     
     # function that loads an image from a file path and resizes it to the specified dimensions    
@@ -504,8 +500,8 @@ class ThirdPage(tk.Frame):
         self.date_of_reg_entry.delete(0, tk.END)
         self.date_of_reg_entry.insert(0, data[6])
 
-        self.priv_id_entry.delete(0, tk.END)
-        self.priv_id_entry.insert(0, data[7])
+        self.priv_batch_entry.delete(0, tk.END)
+        self.priv_batch_entry.insert(0, data[7])
 
         # update the active button state based on the data
         if data[8] == "1":
@@ -694,24 +690,24 @@ class ThirdPage(tk.Frame):
         self.password_entry_popup.place(relx = 0.2, rely = 0.55, anchor = "w")
         
         # label and entry priv id
-        label_priv_idP = tk.Label(
+        label_priv_batchP = tk.Label(
             edit_popup,
             text = "UP_Batch:",
             font = ('Footlight MT Light', 11),
             bg = '#c8a4d4',
             fg = '#12043e'
             )
-        label_priv_idP.place(relx = 0.05, rely = 0.65, anchor = "w")
+        label_priv_batchP.place(relx = 0.05, rely = 0.65, anchor = "w")
         
-        self.priv_id_entry_popup = tk.Entry(
+        self.priv_batch_entry_popup = tk.Entry(
             edit_popup,
             font = ('Footlight MT Light', 11),
             fg = '#12043e',
             bg = '#dbb6ee',
             width = 15
             )
-        self.priv_id_entry_popup.insert(0, data[7])
-        self.priv_id_entry_popup.place(relx = 0.2, rely = 0.65, anchor = "w")
+        self.priv_batch_entry_popup.insert(0, data[7])
+        self.priv_batch_entry_popup.place(relx = 0.2, rely = 0.65, anchor = "w")
         
         # label and button active
         label_activeP = tk.Label(
@@ -782,7 +778,7 @@ class ThirdPage(tk.Frame):
             self.phone_entry_popup.get(),
             self.password_entry_popup.get(),
             self.tree.item(selected_item, "values")[6],
-            self.priv_id_entry_popup.get(),
+            self.priv_batch_entry_popup.get(),
             active_user
         )
         
@@ -832,14 +828,14 @@ class ThirdPage(tk.Frame):
                 edited_data[3],  # Email
                 edited_data[4],  # Phone
                 encrypted_password.hexdigest(),  # Password
-                edited_data[7],  # Privilege ID
+                edited_data[7],  # Privilege Batch
                 active,
                 edited_data[0]  # User ID
                 
             )
             
             # query to be sent to database
-            self.db_manager.execute_query("UPDATE `User` SET `First_name` = %s, `Last_Name` = %s, `Email` = %s, `Phone_number` = %s, `Password` = %s, `Priv_ID` = %s, `Active` = %s WHERE `User`.`User_ID` = %s", params)
+            self.db_manager.execute_query("UPDATE `User` SET `First_name` = %s, `Last_Name` = %s, `Email` = %s, `Phone_number` = %s, `Password` = %s, `Priv_Batch` = %s, `Active` = %s WHERE `User`.`User_ID` = %s", params)
         
             # data to be inserted in the treeview
             edited_data_for_treeview = (
