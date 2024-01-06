@@ -3,6 +3,7 @@ import re
 from tkinter import messagebox as ms
 import datetime
 import hashlib
+from modules.SecondPage import SecondPage
 
 # create super user form page
 class CreateSuperUserPage(tk.Frame):

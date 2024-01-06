@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import datetime
 import random
 
-
-
 class TempPage(tk.Frame):
     def __init__(self, parent, controller, db_manager):
         from modules.HumPage import HumPage
@@ -48,12 +46,6 @@ class TempPage(tk.Frame):
         # configure tag colors for even and odd rows
         self.tree.tag_configure("tree_color", background = '#bca6e1')
     
-        # add some sample data to the Treeview (replace this with data from your database)
-        # self.tree.insert("", "end", values = (1, 26.8, 1, 1, "2023-07-27 - 15:17:25"),tags = ("tree_color",))
-        # self.tree.insert("", "end", values = (2, 28.7, 2, 2, "2023-07-27 - 15:00:25"), tags = ("tree_color",))
-        # self.tree.insert("", "end", values = (3, 25.9, 1, 1, "2023-07-27 - 15:30:45"),tags = ("tree_color",))
-        # self.tree.insert("", "end", values = (4, 26.2, 2, 2, "2023-07-27 - 15:30:25"), tags = ("tree_color",))
-        
         # self.refresh_data()
         tableT = "Temperature"
         
