@@ -455,16 +455,25 @@ class UHP(tk.Frame):
             active_up = 1
         else:
             active_up = 0
+            
+        # check if data is already into the database before adding it    
+        select_param = (priv_id_uhp, user_id_uhp, value_uhp)
+        result = self.db_manager.execute_query("SELECT * FROM `User_Has_Priv` WHERE `Priv_ID` = %s AND `User_ID` = %s AND `Value` = %s", select_param)
         
-        param = (uhp_id, priv_id_uhp, user_id_uhp, add_date_uhp, user_add_uhp, edit_date_uhp, user_edit_uhp, value_uhp, active_up)
+        if(result):
+            ms.showerror("Error", "The data already exists in the database.")
+            return
         
-        self.db_manager.execute_query("INSERT INTO `User_Has_Priv` (`UHP_ID`, `Priv_ID`, `User_ID`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Value`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", param)
+        else:
+            # insert data in database
+            param = (uhp_id, priv_id_uhp, user_id_uhp, add_date_uhp, user_add_uhp, edit_date_uhp, user_edit_uhp, value_uhp, active_up)
+            self.db_manager.execute_query("INSERT INTO `User_Has_Priv` (`UHP_ID`, `Priv_ID`, `User_ID`, `Add_Date`, `User_Add_ID`, `Edit_Date`, `User_Edit_ID`, `Value`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", param)
         
-        # insert the data into the table
-        self.tree.insert("", tk.END, values=(uhp_id, priv_id_uhp, user_id_uhp, add_date_uhp, user_add_uhp, edit_date_uhp, user_edit_uhp, value_uhp, active_up), tags = ("tree_color",))
+            # insert the data into the table
+            self.tree.insert("", tk.END, values=(uhp_id, priv_id_uhp, user_id_uhp, add_date_uhp, user_add_uhp, edit_date_uhp, user_edit_uhp, value_uhp, active_up), tags = ("tree_color",))
         
-        # clear the entry fields
-        self.clear_entries_UP()
+            # clear the entry fields
+            self.clear_entries_UP()
         
     def edit_sel_uhp(self):
         selected_item = self.tree.selection()
@@ -474,12 +483,12 @@ class UHP(tk.Frame):
         self.edit_uhp_pop(selected_item[0])
         
     def disable_uhp(self):
-        dis_uhp = [self.AddUHP, self.EditUHP, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.MainM, self.BackUHP]
+        dis_uhp = [self.AddUHP, self.EditUHP, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.MainM, self.BackUHP, self.uhp_entry, self.priv_id_UP_entry, self.user_id_UP_entry, self.add_date_UP_entry, self.user_add_UP_entry, self.edit_date_UP_entry, self.user_edit_UP, self.value_UP_entry, self.active_UP]
         for button in dis_uhp:
             button.config(state=tk.DISABLED)
             
     def enable_uhp(self):
-        enb_uhp = [self.AddUHP, self.EditUHP, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.MainM, self.BackUHP] 
+        enb_uhp = [self.AddUHP, self.EditUHP, self.DeleteSelected, self.DeleteAll, self.ClearEntry, self.MainM, self.BackUHP, self.uhp_entry, self.priv_id_UP_entry, self.user_id_UP_entry, self.add_date_UP_entry, self.user_add_UP_entry, self.edit_date_UP_entry, self.user_edit_UP, self.value_UP_entry, self.active_UP]
         for btn in enb_uhp:
             btn.config(state=tk.NORMAL)
             

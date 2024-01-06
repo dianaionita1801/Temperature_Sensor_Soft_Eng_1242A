@@ -423,21 +423,28 @@ class ThirdPage(tk.Frame):
         enc_pass = pepper + password + salt
         encrypted_password = hashlib.md5(enc_pass.encode())
             
-            
         # get the current date and time
         date_of_reg = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        # pass the values of the parameters to the params list
-        params = (user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active)
+        select_param = (first_name, last_name, email, phone, encrypted_password.hexdigest(), priv_batch)
+        result  = self.db_manager.execute_query("SELECT * FROM `User` WHERE `First_name` = %s AND `Last_Name` = %s AND `Email` = %s AND `Phone_number` = %s AND `Password` = %s AND `Priv_Batch` = %s", select_param)
         
-        self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_Batch`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", params)
-    
-        # insert the data into the table
-        self.tree.insert("", tk.END, values=(user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active), tags = ("tree_color",))
-    
-        # clear the entry fields
-        self.clear_entries()
-    
+        if(result):
+            ms.showerror("Error", "The data already exists in the database.")
+            return
+        
+        else:
+            # pass the values of the parameters to the params list
+            params = (user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active)
+            
+            self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_Batch`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", params)
+        
+            # insert the data into the table
+            self.tree.insert("", tk.END, values=(user_id, first_name, last_name, email, phone, encrypted_password.hexdigest(), date_of_reg, priv_batch, active), tags = ("tree_color",))
+        
+            # clear the entry fields
+            self.clear_entries()
+        
     
     # function that clears the entry fields - accessed throught the clear entries button
     def clear_entries(self):
@@ -529,12 +536,12 @@ class ThirdPage(tk.Frame):
             self.active_entry_popup.config(text="Yes", relief=tk.SUNKEN)
     
     def disable_buttons(self):
-        btns_to_disable = [self.AddUser, self.EditUser, self.DeleteSel, self.DeleteUsers, self.ClearEntry, self.Perm, self.MainM, self.BackThir]
+        btns_to_disable = [self.AddUser, self.EditUser, self.DeleteSel, self.DeleteUsers, self.ClearEntry, self.Perm, self.MainM, self.BackThir, self.user_id_entry, self.first_name_entry, self.last_name_entry, self.email_entry, self.phone_entry, self.password_entry, self.date_of_reg_entry, self.priv_batch_entry, self.active_entry]
         for button in btns_to_disable:
             button.config(state=tk.DISABLED)
             
     def enable_buttons(self):
-        btns_to_enable = [self.AddUser, self.EditUser, self.DeleteSel, self.DeleteUsers, self.ClearEntry, self.Perm, self.MainM, self.BackThir]
+        btns_to_enable = [self.AddUser, self.EditUser, self.DeleteSel, self.DeleteUsers, self.ClearEntry, self.Perm, self.MainM, self.BackThir, self.user_id_entry, self.first_name_entry, self.last_name_entry, self.email_entry, self.phone_entry, self.password_entry, self.date_of_reg_entry, self.priv_batch_entry, self.active_entry]
         for button in btns_to_enable:
             button.config(state=tk.NORMAL)
             
@@ -809,47 +816,76 @@ class ThirdPage(tk.Frame):
         # ask for confirmation to save changes
         confirmation = ms.askyesnocancel("Save Changes", "Save changes to this user?", parent = edit_popup)
         if confirmation:
-            # update the database with the edited data
-            active = 1 if edited_data[-1] == "Yes" else 0
             
             # encrypt the password if it was modified
+            yes = 0
             edited_password = edited_data[5]
             current_password = current_data[5]
             if edited_password != current_password:
                 enc_pass = pepper + edited_data[5] + salt
                 encrypted_password = hashlib.md5(enc_pass.encode())
+                yes = 1
             else:
-                enc_pass = pepper + current_data[5] + salt
-                encrypted_password = hashlib.md5(enc_pass.encode())
+                encrypted_password = current_password
+                yes = 0
             
-            params = (
-                edited_data[1],  # First Name
-                edited_data[2],  # Last Name
-                edited_data[3],  # Email
-                edited_data[4],  # Phone
-                encrypted_password.hexdigest(),  # Password
-                edited_data[7],  # Privilege Batch
-                active,
-                edited_data[0]  # User ID
-                
-            )
+            if(yes):
+                params = (
+                    edited_data[1],  # First Name
+                    edited_data[2],  # Last Name
+                    edited_data[3],  # Email
+                    edited_data[4],  # Phone
+                    encrypted_password.hexdigest(),  # Password
+                    self.tree.item(selected_item, "values")[6],  # Date of Registration which remains the same
+                    edited_data[7],  # Privilege Batch
+                    active_user,
+                    edited_data[0]  # User ID
+                    
+                )
+            else:
+                params = (
+                    edited_data[1],  # First Name
+                    edited_data[2],  # Last Name
+                    edited_data[3],  # Email
+                    edited_data[4],  # Phone
+                    encrypted_password,  # Password
+                    self.tree.item(selected_item, "values")[6],  # Date of Registration which remains the same
+                    edited_data[7],  # Privilege Batch
+                    active_user,
+                    edited_data[0]  # User ID
+                    
+                )
             
             # query to be sent to database
-            self.db_manager.execute_query("UPDATE `User` SET `First_name` = %s, `Last_Name` = %s, `Email` = %s, `Phone_number` = %s, `Password` = %s, `Priv_Batch` = %s, `Active` = %s WHERE `User`.`User_ID` = %s", params)
+            self.db_manager.execute_query("UPDATE `User` SET `First_name` = %s, `Last_Name` = %s, `Email` = %s, `Phone_number` = %s, `Password` = %s, `Date_of_reg` = %s,`Priv_Batch` = %s, `Active` = %s WHERE `User`.`User_ID` = %s", params)
         
-            # data to be inserted in the treeview
-            edited_data_for_treeview = (
-                edited_data[0],
-                edited_data[1],
-                edited_data[2],
-                edited_data[3],
-                edited_data[4],
-                encrypted_password.hexdigest(),
-                edited_data[6],
-                edited_data[7],
-                active  
-            )
-            
+            if(yes):
+                # data to be inserted in the treeview
+                edited_data_for_treeview = (
+                    edited_data[0],
+                    edited_data[1],
+                    edited_data[2],
+                    edited_data[3],
+                    edited_data[4],
+                    encrypted_password.hexdigest(),
+                    edited_data[6],
+                    edited_data[7],
+                    active_user  
+                )
+            else:
+                # data to be inserted in the treeview
+                edited_data_for_treeview = (
+                    edited_data[0],
+                    edited_data[1],
+                    edited_data[2],
+                    edited_data[3],
+                    edited_data[4],
+                    encrypted_password,
+                    edited_data[6],
+                    edited_data[7],
+                    active_user  
+                )
+                
             # insertion into treeview
             self.tree.item(selected_item, values=edited_data_for_treeview)
         
