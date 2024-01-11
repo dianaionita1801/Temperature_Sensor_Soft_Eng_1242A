@@ -161,8 +161,6 @@ class LoginPage(tk.Frame):
         # unbind the "Enter" key event from the submit_data() method on the frame
         self.unbind("<Return>")
      
-        
-
     # function that loads an image from a file path and resizes it to the specified dimensions
     def load_and_resize_image(self, width, height):
         image = Image.open(self.image_path)

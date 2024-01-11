@@ -3,8 +3,14 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 from tkinter import Scrollbar
 from modules.AdminPasswordWindow import AdminPasswordWindow
-import time
+import asyncio
+import websockets
+import nest_asyncio
+import threading
+import asynctkinter as at
 
+
+nest_asyncio.apply()
 
 class SixthPage(tk.Frame):
     def __init__(self, parent, controller, db_manager):
@@ -49,10 +55,6 @@ class SixthPage(tk.Frame):
         # configure tag colors for even and odd rows
         self.tree.tag_configure("tree_color", background = '#bca6e1')
     
-        # add some sample data to the Treeview (replace this with data from your database)
-        # self.tree.insert("", "end", values = (1, 1, 1, 2, 2, "2023-07-27 - 15:17:25"),tags = ("tree_color",))
-        # self.tree.insert("", "end", values = (2, 2, 2, 1, 1, "2023-07-27 - 15:00:25"), tags = ("tree_color",))
-        
         self.fill_monitoring()
        
         tableM = "Monitoring" 
@@ -82,7 +84,7 @@ class SixthPage(tk.Frame):
         StartMon = tk.Button(
             self,
             text = "Start",
-            # command = self.add_room,
+            command = lambda: threading.Thread(target=asyncio.run, args=(self.start_monitoring(),)).start(),
             font = ('Footlight MT Light', 10, 'bold'),
             fg = '#1f1135',
             bg = '#bc90d8',
@@ -97,7 +99,7 @@ class SixthPage(tk.Frame):
         StopMon = tk.Button(
             self,
             text = "Stop",
-            # command = self.edit_room,
+            command = lambda: threading.Thread(target=asyncio.run, args=(self.stop_monitoring(),)).start(),
             font = ('Footlight MT Light', 10, 'bold'),
             fg = '#1f1135',
             bg = '#bc90d8',
@@ -159,7 +161,24 @@ class SixthPage(tk.Frame):
         
         # bind the resize callback to the parent window
         self.bind("<Configure>", self.on_window_resize)
-    
+        
+    def run_send_command(self, command):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.send_command(command))
+        loop.close()
+
+    async def send_command(self, command):
+        uri = "ws://192.168.0.221:8765"
+        async with websockets.connect(uri) as websocket:
+            await websocket.send(command)
+
+    async def start_monitoring(self):
+        await self.send_command("start")
+
+    async def stop_monitoring(self):
+        await self.send_command("stop")
+
     # function that loads an image from a file path and resizes it to the specified dimensions    
     def load_and_resize_image(self, width, height):
         image = Image.open(self.image_path)

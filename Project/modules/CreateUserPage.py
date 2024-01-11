@@ -183,7 +183,7 @@ class CreateUserPage(tk.Frame):
         add_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         active = None
         user_id = None
-        priv_id = None
+        priv_batch = None
         
         salt = "57c21b"
         pepper = "2p2o1v"
@@ -255,10 +255,10 @@ class CreateUserPage(tk.Frame):
         encrypted_password = hashlib.md5(enc_pass.encode())
             
         
-        paramt = (user_id, f_name, l_name, email, phone, encrypted_password.hexdigest(), add_date, priv_id, active) 
+        paramt = (user_id, f_name, l_name, email, phone, encrypted_password.hexdigest(), add_date, priv_batch, active) 
         
         try:
-            self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", paramt)
+            self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_Batch`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", paramt)
             
             
             # message to be shown if the registration was a success

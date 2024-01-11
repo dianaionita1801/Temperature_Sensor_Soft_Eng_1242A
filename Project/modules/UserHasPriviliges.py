@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter import Scrollbar
 import datetime
 from modules.ToggleButton import ToggleButton
+from modules.ThirdPage import ThirdPage
 
 class UHP(tk.Frame):
     def __init__(self, parent, controller, db_manager):
@@ -767,7 +768,6 @@ class UHP(tk.Frame):
 
         # reset the flag after the deletion
         self.del_all_uhp_flag = False
-                
                 
     # function that loads an image from a file path and resizes it to the specified dimensions    
     def load_and_resize_image(self, width, height):
