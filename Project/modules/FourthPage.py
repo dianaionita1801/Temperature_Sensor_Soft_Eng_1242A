@@ -39,7 +39,7 @@ class FourthPage(tk.Frame):
         self.tree = ttk.Treeview(tree_frame, columns=("Sensor_ID", "Sensor_Name", "Room_ID", "Add_Date", "User_Add_ID", "Edit_Date", "User_Edit_ID", "Active"), show="headings")
         
         # define the headings of the treeview
-        self.tree.heading("Sensor_ID", text="User ID")
+        self.tree.heading("Sensor_ID", text="Sensor ID")
         self.tree.heading("Sensor_Name", text="Sensor Name")
         self.tree.heading("Room_ID", text="Room ID")
         self.tree.heading("Add_Date", text="Add date")
@@ -635,7 +635,7 @@ class FourthPage(tk.Frame):
            return 
            
         # ask for confirmation to save changes
-        confirmation = ms.askyesnocancel("Save Changes", "Save changes to this user?", parent = edit_pop)
+        confirmation = ms.askyesnocancel("Save Changes", "Save changes to this sensor?", parent = edit_pop)
         if confirmation:
             # update the database with the edited data
             active = 1 if edited_sen_data[-1] == 1 else 0

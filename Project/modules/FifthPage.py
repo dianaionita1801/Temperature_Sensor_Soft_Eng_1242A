@@ -590,7 +590,7 @@ class FifthPage(tk.Frame):
 
            
         # ask for confirmation to save changes
-        confirmation = ms.askyesnocancel("Save Changes", "Save changes to this user?", parent = edit_room_p)
+        confirmation = ms.askyesnocancel("Save Changes", "Save changes to this room?", parent = edit_room_p)
         if confirmation:
         # update the database with the edited data
             active = 1 if edited_room[-1] == 1 else 0

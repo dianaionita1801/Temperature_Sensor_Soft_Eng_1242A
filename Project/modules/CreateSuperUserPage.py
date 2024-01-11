@@ -253,7 +253,7 @@ class CreateSuperUserPage(tk.Frame):
         param = (user_id, S_f_name, S_l_name, S_email, S_phone, encrypted_password.hexdigest(), add_date, priv_id, active)
         
         try:
-            self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_ID`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", param)        
+            self.db_manager.execute_query("INSERT INTO `User` (`User_ID`, `First_name`, `Last_Name`, `Email`, `Phone_number`, `Password`, `Date_of_reg`, `Priv_Batch`, `Active`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s)", param)        
             
             # message to be shown if the registration was a success
             ms.showinfo("SUCCESS","Super User account created succesfully!")
